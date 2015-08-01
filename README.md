@@ -75,6 +75,8 @@ In each iteration of the loop, the loop node copies itself, overwrites itself wi
 
 ### Unary subtraction
 
+Since there's no subtraction command, subtraction has to solve the equation `x = n + y` for n = [0,∞). Needless to say, this won't work if y > x.
+
 ```
 [This program calculates x - y. Input x in unary.].,%<%>  
 [Input y in unary.].,^<%<[1]
@@ -94,3 +96,5 @@ This builds a tree like so:
  / \
 1   0
 ```
+
+`~` contains the main loop, `[^<<<|^^[]<|^>|^=^>~]`: navigate from `~` to `1`, add `1` to `n`, replace `n+y` with the sum of `n` and `y`, and execute either `~` or `@` depending on whether `n+y` is equal to `x`. `@` contains `[^<<<.]`, which navigates from `@` to `n` and prints `n`. 
