@@ -1,18 +1,20 @@
 class Node
 	attr_accessor :value
 	attr_reader :parent, :left_child, :right_child
+	@@num_nodes = 0
 
 	def initialize(parent = nil)
 		@parent = parent
 		@left_child = nil
 		@right_child = nil
 		@value = ''
+		@node_num = (@@num_nodes += 1)
 	end
 
 	def add_parent
 		@parent ||= Node.new
 		@parent.left_child = self
-		@parent.right_child = Node.new(self)
+		@parent.right_child = Node.new(@parent)
 	end
 
 	def add_children
@@ -43,14 +45,14 @@ class Node
 	end
 
 	def to_s
-		value == "" ? "No value" : value
+		(value == "" ? "No value" : value) + " \##{@node_num}"
 	end
-
-	protected
 
 	def is_left_child?
 		return self.parent.left_child == self
 	end
+
+	protected
 
 	def add_left_child(node)
 		self.left_child = node
@@ -76,6 +78,8 @@ Its parent is #{current_node.parent ? current_node.parent : 'nonexistent'}. \t\
 Its left child is #{current_node.left_child ? current_node.left_child : 'nonexistent'}. \t\
 Its right child is #{current_node.right_child ? current_node.right_child : 'nonexistent'}." if debug
   	char = src[idx].chr
+  	puts src if debug
+  	puts " " * idx + "^" if debug
   	case char
   	when "$"
   		puts "Adding parent." if debug
@@ -103,13 +107,13 @@ Its right child is #{current_node.right_child ? current_node.right_child : 'none
   		idx = i
   	when "^"
   		puts "Copying value to parent." if debug
-  		current_node.parent.value = current_node.value
+  		current_node.parent.value += current_node.value
   	when "<"
   		puts "Copying value to left child." if debug
-  		current_node.left_child.value = current_node.value
+  		current_node.left_child.value += current_node.value
   	when ">"
   		puts "Copying value to right child." if debug
-  		current_node.right_child.value = current_node.value
+  		current_node.right_child.value += current_node.value
   	when "|"
   		puts "Moving to parent." if debug
   		current_node = current_node.parent
@@ -124,7 +128,7 @@ Its right child is #{current_node.right_child ? current_node.right_child : 'none
 			register = current_node.deep_dup
 		when "!"
 			puts "Pasting from clipboard." if debug
-			current_node.parent.overwrite_child(register)
+			current_node.parent.overwrite_child(register, current_node.is_left_child?)
 		when "="
 			puts "If statement executed." if debug
 			current_node = parent_node if current_node.value == parent_node.value
