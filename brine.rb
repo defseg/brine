@@ -1,7 +1,9 @@
+#!/usr/bin/env ruby
+
 class Node
 	attr_accessor :value
 	attr_reader :parent, :left_child, :right_child
-	@@num_nodes = 0
+	@@num_nodes = 0 
 
 	def initialize(parent = nil)
 		@parent = parent
@@ -105,22 +107,22 @@ Its right child is #{current_node.right_child ? current_node.right_child : 'none
   		current_node.value = buffer
   		puts "Storing value #{buffer}." if debug
   		idx = i
-  	when "^"
+  	when "|"
   		puts "Copying value to parent." if debug
   		current_node.parent.value += current_node.value
-  	when "<"
+  	when "{"
   		puts "Copying value to left child." if debug
   		current_node.left_child.value += current_node.value
-  	when ">"
+  	when "}"
   		puts "Copying value to right child." if debug
   		current_node.right_child.value += current_node.value
-  	when "|"
+  	when "^"
   		puts "Moving to parent." if debug
   		current_node = current_node.parent
-  	when "("
+  	when "<"
   		puts "Moving to left child." if debug
   		current_node = current_node.left_child
-  	when ")"
+  	when ">"
 			puts "Moving to right child." if debug
 			current_node = current_node.right_child
 		when "?"
@@ -135,8 +137,6 @@ Its right child is #{current_node.right_child ? current_node.right_child : 'none
 		when "~"
 			puts "Executing code at current node." if debug
 			# this could be optimized, since loops are [...~]~
-			# I bet this won't work
-			# why doesn't this take in the current_node? it ends up being nil
 			brine(current_node.value, debug, current_node, register)
 		when ","
 			puts "Reading user input." if debug
@@ -147,4 +147,9 @@ Its right child is #{current_node.right_child ? current_node.right_child : 'none
   	end
   	idx += 1
   end
+end
+
+if __FILE__ == $0
+	code = ARGF.read 
+	brine(code)
 end
