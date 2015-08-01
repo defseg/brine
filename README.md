@@ -1,5 +1,8 @@
 # brine
-A binary tree-based brainfuck/Underload-like esoteric programming language.
+
+A binary tree-based esoteric programming language. 
+
+Unlike [brainfuck](http://esolangs.org/wiki/Brainfuck), the memory is laid out in the form of a binary tree; unlike [Arborealis](http://esolangs.org/wiki/Arborealis), [Treehugger](http://esolangs.org/wiki/Treehugger), and [V](http://esolangs.org/wiki/V), the nodes of the binary tree contain strings, which, as in [Underload](http://esolangs.org/wiki/Underload), can contain code to be executed.
 
 ## Commands
 
