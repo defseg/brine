@@ -61,10 +61,9 @@ class Node
 	attr_writer :parent, :left_child, :right_child
 end
 
-def brine(src)
+def brine(src, current_node = nil, register = nil)
 	loc = 0
-	register = nil
-  root_node = current_node = Node.new
+  current_node ||= Node.new
   idx = 0
 
   # can't just use each_char because stuff in brackets needs to be skipped
@@ -84,9 +83,9 @@ def brine(src)
   			i += 1
   			if src[i].chr == "]"
   				bracket_depth -= 1
+  			  buffer << src[i].chr unless bracket_depth < 0 # TODO
   			else
   				bracket_depth += 1 if src[i].chr == "["
-  				puts src[i].chr
   				buffer << src[i].chr
   			end
   		end
@@ -113,13 +112,13 @@ def brine(src)
 		when "~"
 			# this could be optimized, since loops are [...~]~
 			# I bet this won't work
-			brine(current_node.value.dup)
+			# why doesn't this take in the current_node? it ends up being nil
+			brine(current_node.value, current_node, register)
 		when ","
 			current_node.value = gets.chomp
 		when "."
 			puts current_node.value
   	end
-
   	idx += 1
   end
 end
