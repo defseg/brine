@@ -133,14 +133,15 @@ Its right child is #{current_node.right_child ? current_node.right_child : 'none
 			current_node.parent.overwrite_child(register, current_node.is_left_child?)
 		when "="
 			puts "If statement executed." if debug
-			current_node = parent_node if current_node.value == parent_node.value
+			current_node = current_node.parent if current_node.value == current_node.parent.value
 		when "~"
 			puts "Executing code at current node." if debug
 			# this could be optimized, since loops are [...~]~
 			brine(current_node.value, debug, current_node, register)
 		when ","
 			puts "Reading user input." if debug
-			current_node.value = gets.chomp
+			input = STDIN.gets
+			current_node.value = input.chomp
 		when "."
 			puts "Printing." if debug
 			puts current_node.value
