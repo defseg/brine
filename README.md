@@ -30,16 +30,17 @@ A binary tree-based brainfuck/Underload-like esoteric programming language.
 ### Unary Fibonacci sequence calculator
 
 ```
-%[1]..            Add children to initial node, then store [1] and print it twice.
-{}                Copy 1 to both child nodes.
-$^                Add a parent node (the loop node) and move to it.
-[                 Begin the main loop.
+%[1]..            Add children to initial node, then store 1 and print it twice
+{}                Copy 1 to both child nodes
+$^                Add a parent node (the loop node) and move to it
+[                 Begin the main loop
   <[]             Clear the left child of the loop node (the 'A' node)
-  <|^>|^.         Add the two children of the loop node to the 'A' node. Print the result.
-  <?^^>!          Copy the left child of the 'A' node (the 'B' node) to the right child of the loop node.
-  ^$|^            Make a new copy of the loop node as the parent of the (old) loop node.
-  ~               Execute the new loop node.
-]~                Store the loop to the loop node and execute it.
+  <|^>|^.         Add the two children of the loop node to the 'A' node and print the result
+  <?^^>!          Copy the left child of the 'A' node (the 'B' node) 
+                  to the right child of the loop node
+  ^$|^            Make a new copy of the loop node as the parent of the (old) loop node
+  ~               Execute the new loop node
+]~                Store the loop to the loop node and execute it
 ```
 
 This builds an indefinitely-growing tree:
