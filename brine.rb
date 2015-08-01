@@ -12,7 +12,7 @@ class Node
 	def add_parent
 		@parent ||= Node.new
 		@parent.left_child = self
-		@parent.right_child = Node.new
+		@parent.right_child = Node.new(self)
 	end
 
 	def add_children
@@ -42,6 +42,10 @@ class Node
 		end
 	end
 
+	def to_s
+		value == "" ? "No value" : value
+	end
+
 	protected
 
 	def is_left_child?
@@ -61,18 +65,23 @@ class Node
 	attr_writer :parent, :left_child, :right_child
 end
 
-def brine(src, current_node = nil, register = nil)
+def brine(src, debug = false, current_node = Node.new, register = nil)
 	loc = 0
-  current_node ||= Node.new
   idx = 0
 
   # can't just use each_char because stuff in brackets needs to be skipped
   until idx == src.length
+  	puts "The current node is #{current_node}. \t\
+Its parent is #{current_node.parent ? current_node.parent : 'nonexistent'}. \t\
+Its left child is #{current_node.left_child ? current_node.left_child : 'nonexistent'}. \t\
+Its right child is #{current_node.right_child ? current_node.right_child : 'nonexistent'}." if debug
   	char = src[idx].chr
   	case char
   	when "$"
+  		puts "Adding parent." if debug
   		current_node.add_parent
   	when "%"
+  		puts "Adding children." if debug
   		current_node.add_children
   	when "["
   		# an unmatched [ will dump everything to the end of the program into the node
@@ -90,33 +99,46 @@ def brine(src, current_node = nil, register = nil)
   			end
   		end
   		current_node.value = buffer
+  		puts "Storing value #{buffer}." if debug
   		idx = i
   	when "^"
+  		puts "Copying value to parent." if debug
   		current_node.parent.value = current_node.value
   	when "<"
+  		puts "Copying value to left child." if debug
   		current_node.left_child.value = current_node.value
   	when ">"
+  		puts "Copying value to right child." if debug
   		current_node.right_child.value = current_node.value
   	when "|"
+  		puts "Moving to parent." if debug
   		current_node = current_node.parent
   	when "("
+  		puts "Moving to left child." if debug
   		current_node = current_node.left_child
   	when ")"
+			puts "Moving to right child." if debug
 			current_node = current_node.right_child
 		when "?"
+			puts "Copying to clipboard." if debug
 			register = current_node.deep_dup
 		when "!"
+			puts "Pasting from clipboard." if debug
 			current_node.parent.overwrite_child(register)
 		when "="
+			puts "If statement executed." if debug
 			current_node = parent_node if current_node.value == parent_node.value
 		when "~"
+			puts "Executing code at current node." if debug
 			# this could be optimized, since loops are [...~]~
 			# I bet this won't work
 			# why doesn't this take in the current_node? it ends up being nil
-			brine(current_node.value, current_node, register)
+			brine(current_node.value, debug, current_node, register)
 		when ","
+			puts "Reading user input." if debug
 			current_node.value = gets.chomp
 		when "."
+			puts "Printing." if debug
 			puts current_node.value
   	end
   	idx += 1
