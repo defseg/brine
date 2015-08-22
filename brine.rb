@@ -3,7 +3,7 @@
 class Node
 	attr_accessor :value
 	attr_reader :parent, :left_child, :right_child
-	@@num_nodes = 0 
+	@@num_nodes = 0 # number each node in the order they're created (for debugging)
 
 	def initialize(parent = nil)
 		@parent = parent
@@ -14,9 +14,11 @@ class Node
 	end
 
 	def add_parent
-		@parent ||= Node.new
-		@parent.left_child = self
-		@parent.right_child = Node.new(@parent)
+		unless parent
+			@parent = Node.new
+			@parent.left_child = self
+			@parent.right_child = Node.new(@parent)
+		end
 	end
 
 	def add_children
