@@ -71,88 +71,102 @@ class Node
 	attr_writer :parent, :left_child, :right_child
 end
 
-def brine(src, debug = false, current_node = Node.new, register = nil)
-	loc = 0
-  idx = 0
+class BrineInterpreter
+	def initialize
+		@current_node = Node.new
+		@register = nil
+	end
 
-  # can't just use each_char because stuff in brackets needs to be skipped
-  until idx == src.length
-  	puts "The current node is #{current_node}. \t\
-Its parent is #{current_node.parent ? current_node.parent : 'nonexistent'}. \t\
-Its left child is #{current_node.left_child ? current_node.left_child : 'nonexistent'}. \t\
-Its right child is #{current_node.right_child ? current_node.right_child : 'nonexistent'}." if debug
-  	char = src[idx].chr
-  	puts src if debug
-  	puts " " * idx + "^" if debug
-  	case char
-  	when "$"
-  		puts "Adding parent." if debug
-  		current_node.add_parent
-  	when "%"
-  		puts "Adding children." if debug
-  		current_node.add_children
-  	when "["
-  		# an unmatched [ will dump everything to the end of the program into the node
-  		bracket_depth = 0
-  		i = idx
-  		buffer = ""
-  		until i == src.length || bracket_depth == -1
-  			i += 1
-  			if src[i].chr == "]"
-  				bracket_depth -= 1
-  			  buffer << src[i].chr unless bracket_depth < 0 # TODO
-  			else
-  				bracket_depth += 1 if src[i].chr == "["
-  				buffer << src[i].chr
-  			end
-  		end
-  		current_node.value = buffer
-  		puts "Storing value #{buffer}." if debug
-  		idx = i
-  	when "|"
-  		puts "Copying value to parent." if debug
-  		current_node.parent.value += current_node.value
-  	when "{"
-  		puts "Copying value to left child." if debug
-  		current_node.left_child.value += current_node.value
-  	when "}"
-  		puts "Copying value to right child." if debug
-  		current_node.right_child.value += current_node.value
-  	when "^"
-  		puts "Moving to parent." if debug
-  		current_node = current_node.parent
-  	when "<"
-  		puts "Moving to left child." if debug
-  		current_node = current_node.left_child
-  	when ">"
-			puts "Moving to right child." if debug
-			current_node = current_node.right_child
-		when "?"
-			puts "Copying to clipboard." if debug
-			register = current_node.deep_dup
-		when "!"
-			puts "Pasting from clipboard." if debug
-			current_node.parent.overwrite_child(register, current_node.is_left_child?)
-		when "="
-			puts "If statement executed." if debug
-			current_node = current_node.parent if current_node.value == current_node.parent.value
-		when "~"
-			puts "Executing code at current node." if debug
-			# this could be optimized, since loops are [...~]~
-			brine(current_node.value, debug, current_node, register)
-		when ","
-			puts "Reading user input." if debug
-			input = STDIN.gets
-			current_node.value = input.chomp
-		when "."
-			puts "Printing." if debug
-			puts current_node.value
-  	end
-  	idx += 1
-  end
+  def brine(src, debug = false)
+		loc = 0
+	  idx = 0
+
+	  # can't just use each_char because stuff in brackets needs to be skipped
+	  until idx == src.length
+	  	puts "The current node is #{@current_node}. \t\
+	Its parent is #{@current_node.parent ? @current_node.parent : 'nonexistent'}. \t\
+	Its left child is #{@current_node.left_child ? @current_node.left_child : 'nonexistent'}. \t\
+	Its right child is #{@current_node.right_child ? @current_node.right_child : 'nonexistent'}." if debug
+	  	char = src[idx].chr
+	  	puts src if debug
+	  	puts " " * idx + "^" if debug
+	  	case char
+	  	when "$"
+	  		puts "Adding parent." if debug
+	  		@current_node.add_parent
+	  	when "%"
+	  		puts "Adding children." if debug
+	  		@current_node.add_children
+	  	when "["
+	  		# an unmatched [ will dump everything to the end of the program into the node
+	  		bracket_depth = 0
+	  		i = idx
+	  		buffer = ""
+	  		until i == src.length || bracket_depth == -1
+	  			i += 1
+	  			if src[i].chr == "]"
+	  				bracket_depth -= 1
+	  			  buffer << src[i].chr unless bracket_depth < 0 # TODO
+	  			else
+	  				bracket_depth += 1 if src[i].chr == "["
+	  				buffer << src[i].chr
+	  			end
+	  		end
+	  		@current_node.value = buffer
+	  		puts "Storing value #{buffer}." if debug
+	  		idx = i
+	  	when "|"
+	  		puts "Copying value to parent." if debug
+	  		@current_node.parent.value += @current_node.value
+	  	when "{"
+	  		puts "Copying value to left child." if debug
+	  		@current_node.left_child.value += @current_node.value
+	  	when "}"
+	  		puts "Copying value to right child." if debug
+	  		@current_node.right_child.value += @current_node.value
+	  	when "^"
+	  		puts "Moving to parent." if debug
+	  		@current_node = @current_node.parent
+	  	when "<"
+	  		puts "Moving to left child." if debug
+	  		@current_node = @current_node.left_child
+	  	when ">"
+				puts "Moving to right child." if debug
+				@current_node = @current_node.right_child
+			when "?"
+				puts "Copying to clipboard." if debug
+				@register = @current_node.deep_dup
+			when "!"
+				puts "Pasting from clipboard." if debug
+				@current_node.parent.overwrite_child(@register, @current_node.is_left_child?)
+			when "="
+				puts "If statement executed." if debug
+				@current_node = @current_node.parent if @current_node.value == @current_node.parent.value
+			when "~"
+				puts "Executing code at current node." if debug
+				# this could be optimized, since loops are [...~]~
+				# TODO: this probably won't work in cases where the end of the code to be executed
+				#       doesn't return you to where you were in the tree when you hit the ~
+				brine(@current_node.value, debug)
+			when ","
+				puts "Reading user input." if debug
+				input = STDIN.gets
+				@current_node.value = input.chomp
+			when "."
+				puts "Printing." if debug
+				puts @current_node.value
+	  	end
+	  	idx += 1
+	  end
+	end
+
+	private
+
+	attr_accessor :current_node, :register
 end
 
 if __FILE__ == $0
 	code = ARGF.read 
-	brine(code)
+	b = BrineInterpreter.new
+	b.brine(code)
 end
