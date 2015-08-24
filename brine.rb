@@ -26,8 +26,7 @@ class Node
 		@right_child ||= Node.new(self)
 	end
 
-	# should ! copy the entire node or just its value?
-	# I'll have it copy the entire node, why not
+	# ! copies the entire node and all its children, not just its value
 	def deep_dup
 		left_dup = right_dup = nil
 		left_dup = self.left_child.deep_dup if self.left_child
@@ -46,6 +45,7 @@ class Node
 		else
 			self.add_right_child(new_node)
 		end
+		new_node
 	end
 
 	def to_s
@@ -138,15 +138,13 @@ class BrineInterpreter
 				@register = @current_node.deep_dup
 			when "!"
 				puts "Pasting from clipboard." if debug
-				@current_node.parent.overwrite_child(@register, @current_node.is_left_child?)
+				@current_node = @current_node.parent.overwrite_child(@register, @current_node.is_left_child?)
 			when "="
 				puts "If statement executed." if debug
 				@current_node = @current_node.parent if @current_node.value == @current_node.parent.value
 			when "~"
 				puts "Executing code at current node." if debug
 				# this could be optimized, since loops are [...~]~
-				# TODO: this probably won't work in cases where the end of the code to be executed
-				#       doesn't return you to where you were in the tree when you hit the ~
 				brine(@current_node.value, debug)
 			when ","
 				puts "Reading user input." if debug
