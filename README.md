@@ -106,16 +106,16 @@ This builds a tree like so:
 
 Brine is Turing-complete by reduction from Underload. Using the left edge of the tree to simulate a stack:
 
-* **(** = `$^[`
-* **)** = `]`
-* **:** = `$^[]<|^`
-* **^** = `%>[<]^}[]>|^~`
+* `(` = `$^[`
+* `)` = `]`
+* `:` = `$^[]<|^`
+* `^` = `%>[<]^}[]>|^~`
 
 Note that, for `^`, we have to prepend `<` to the contents of the cell before we execute it: Underload `^` pops the stack.
 
-A Brine translation of the Underload [binary-counting Turing machine](http://oerjan.nvg.org/esoteric/underload/tmcount.disclaimed.ul) is provided as **bincount.bri**. Since the Underload source uses `S` and `~`, we provide Brine translations of those Underload commands as well:
+A Brine translation of the Underload [binary-counting Turing machine](http://oerjan.nvg.org/esoteric/underload/tmcount.ul) is provided as **bincount.bri**. Since the Underload source uses `S` and `~`, we provide Brine translations of those Underload commands as well:
 
-* **S** = `.<`
-* **~** = `%>[]^}>?^<>!^^[]<|[]>|^^`
+* `S` = `.<`
+* `~` = `%>[]^}>?^<>!^^[]<|[]>|^^`
 
 We use `%>[]^}>?^` instead of `?` for reasons that are left as an exercise for the reader.
