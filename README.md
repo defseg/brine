@@ -12,9 +12,9 @@ Unlike [brainfuck](http://esolangs.org/wiki/Brainfuck), the memory is laid out i
 * **^** moves to the parent of the current node.
 * **<** moves to the left child of the current node.
 * **>** moves to the right child of the current node.
-* **|** copies the data of the current node to its parent.
-* **{** copies the data of the current node to its left child.
-* **}** copies the data of the current node to its right child.
+* **|** appends the data of the current node to its parent.
+* **{** appends the data of the current node to its left child.
+* **}** appends the data of the current node to its right child.
 * **?** copies the current node to the clipboard.
 * **!** replaces the current node with the contents of the clipboard.
 * **=** jumps to the parent node if the current node's contents are equal to the parent node's contents.
@@ -101,3 +101,21 @@ This builds a tree like so:
 ```
 
 `~` contains the main loop, `[^<<<|^^[]<|^>|^=^>~]`: navigate from `~` to `1`, add `1` to `n`, replace `n+y` with the sum of `n` and `y`, and execute either `~` or `@` depending on whether `n+y` is equal to `x`. `@` contains `[^<<<.]`, which navigates from `@` to `n` and prints `n`. 
+
+### Turing-completeness
+
+Brine is Turing-complete by reduction from Underload. Using the left edge of the tree to simulate a stack:
+
+* **(** = `$^[`
+* **)** = `]`
+* **:** = `$^[]<|^`
+* **^** = `%>[<]^}[]>|^~`
+
+Note that, for `^`, we have to prepend `<` to the contents of the cell before we execute it: Underload `^` pops the stack.
+
+A Brine translation of the Underload [binary-counting Turing machine](http://oerjan.nvg.org/esoteric/underload/tmcount.disclaimed.ul) is provided as **bincount.bri**. Since the Underload source uses `S` and `~`, we provide Brine translations of those Underload commands as well:
+
+* **S** = `.<`
+* **~** = `%>[]^}>?^<>!^^[]<|[]>|^^`
+
+We use `%>[]^}>?^` instead of `?` for reasons that are left as an exercise for the reader.
